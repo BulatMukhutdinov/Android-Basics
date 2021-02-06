@@ -106,6 +106,373 @@ class MainActivity : AppCompatActivity() {
 
 Откройте файл `activity_main.xml`. Убедитесь, что таб в левом правом углу стоит на __Design__.
 
-1. Нам нужно отображать какое значение выпало на костях. Для этого воспользуемся текстом, который уже присутствует на экране. Поменяем текст на `1` (в качестве начального значения кубика). 
+1. Нам нужно отображать какое значение выпало на костях. Для этого воспользуемся текстом, который уже присутствует на экране. Поменяем текст
+   на `1` (в качестве начального значения кубика).
+   ![](res/rec1.gif)
+2. Размер текста очень маленький. Давайте его увеличим
+   ![](res/rec2.gif)
+3. Теперь давайте добавим кнопку, чтобы выкидывать кубик.
+   ![](res/rec3.gif)
+4. Чтобы наша кнопка располагалась там, где нам нужно, ей нужно добавить ограничения (constraints)
+   ![](res/rec4.gif)
+5. Для того, чтобы у нас была возможность работать с UI элементами, им надо назначить id. Давайте назначим тексту id `result`, а кнопке -
+   `roll`
+   ![](res/rec5.gif)
 
-![](res/rec1.mov)
+Теперь посмотрим, как взаимодействовать с UI элементами. В Андроиде они называются __вью__ (_view_).
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    var points = 0
+
+    lateinit var result: TextView
+
+    lateinit var roll: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        result = findViewById(R.id.result)
+        roll = findViewById(R.id.roll)
+    }
+
+    fun addPointsIfGuessed(dice: Int, guess: Int) {
+        if (dice == guess) {
+            points += 10
+        }
+    }
+
+    fun rollDice(): Int {
+        val range = (1..6)
+        return range.random()
+    }
+}
+``` 
+
+* `lateinit var result` - когда мы не можем присвоить значение переменной сразу, мы можем пометить ключевым словом `lateinit`. Почему мы не
+  можем сразу назначить значение нашей текстовой вью? Потому что все вьюшки создаются только после вызова
+  метода `setContentView(R.layout.activity_main)`.
+* `TextView` и `Button` - это классы для текстового вью и кнопки соответственно. Если строчки объявления переменных у вас подсвечиваются
+  красным, проверьте, импортировались ли у вас необходимые классы. Если нет, добавьте их рядом с другими импортами.
+    ```kotlin
+    import android.widget.Button
+    import android.widget.TextView
+    ````
+* `result = findViewById(R.id.result)` - здесь с помощью метода `findViewById` мы инициализируем наши вью. Этот метод принимает на вход id,
+  которые мы объявили на предыдущем шаге. Обратите внимание, что этот метод должен быть вызван только после
+  метода `setContentView(R.layout.activity_main)`
+
+Теперь у нас есть переменные, которые отвечают за вью. Давайте напишем следующую логику: при нажатии на кнопку мы будем рандомить значение и
+присваивать полеченное значение в наше текстовое вью.
+
+## Обработка нажатий
+
+Добавим обработку нажатий на кнопку. В Андроиде такие обработчики называются __лисенерами__ (_listener_).
+
+```kotlin
+roll.setOnClickListener({
+    val rollResult = rollDice()
+})
+```
+
+У класса `Button` есть функция, которая на вход принимает другую функцию. Каждый раз, когда кнопка будет нажата, будет вызвана наша функция.
+На этом примере мы видим, что в привычные круглые скобки `( )` для передачи аргументов, мы передаем код в фигурных скобках, т.е. мы передаем
+функцию.
+
+Синтаксис Котлина позволяет опустить круглые скобки, если аргумент-функция является последним аргументом. Т.к. у нас всего один аргумент, то
+он и является последним, поэтому мы можем переписать код в более простую форму:
+
+```kotlin
+roll.setOnClickListener {
+    val rollResult = rollDice()
+}
+```
+
+Здесь мы пишем, что при каждом нажатии на кнопку, мы будем вызывать нашу функцию `rollDice()`, чтобы получить новое значение броска кубика.
+Теперь полученное значение нам надо присвоить текстовой вью.
+
+## Меняем текст
+
+Чтобы поменять текст у текстовой вью, напишем следующий код:
+
+```kotlin
+result.text = "$rollResult"
+```
+
+Мы обращаемся к полю `text` у нашей вью и присваиваем туда значение, полученное от `rollDice()`. Но `rollDice()` возвращает тип `Int`, а
+текст должен быть типа `String`, поэтому мы оформляем полученное значение как строку.
+
+Теперь соберем все куски вместе и посмотрим на общую картину:
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    var points = 0
+
+    lateinit var result: TextView
+
+    lateinit var roll: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        result = findViewById(R.id.result)
+        roll = findViewById(R.id.roll)
+
+        roll.setOnClickListener {
+            val rollResult = rollDice()
+
+            result.text = "$rollResult"
+        }
+    }
+
+    fun addPointsIfGuessed(dice: Int, guess: Int) {
+        if (dice == guess) {
+            points += 10
+        }
+    }
+
+    fun rollDice(): Int {
+        val range = (1..6)
+        return range.random()
+    }
+}
+```
+
+Запустите приложение и протестируйте его. Теперь при каждом нажатии число посередине должно меняться. Хотя, иногда следующий результат можем
+быть таким же, как текущий, тогда число обновляться не будет.
+
+## Геймификация
+
+Теперь добавим небольшой элемент игры — пользователь должен иметь возможность сделать ставку на то, каким будет следующее значение. Вернемся
+на экран UI'я. Кликните на вкладке `Buttons` и перетащите на экран 1 __RadioGroup__ и 6 __RadioButton__'ов. _RadioButton_ - это элемент,
+который может быть в 2 состояниях: выбран или не выбран.
+![](res/rec6.gif)
+
+Чтобы была возможность выбрать только 1 __RadioButton__ из 6, их надо поместить в группу. Для этого нам нужно поместить __RadioButton__'ы
+под __
+RadioGroup__.
+![](res/rec7.gif)
+
+Теперь давайте переименуем каждый __RadioButton__: от 1 до 6. И добавим соответствующие id: от `choice1` до `choice6`.
+![](res/rec8.gif)
+
+И остается добавить текстовую вью для отображения очков.
+![](res/rec9.gif)
+
+И конечно надо добавить id для этой вью.
+![](res/rec10.gif)
+
+Давайте теперь поговорим о расстановке элементов. Каждый элемент имеет зависимость слева, справа, сверху и снизу. Вью обязана иметь как
+минимум 1 зависимость для верха или низа и 1 для лево или право.
+
+Например, группа __RadioButton__'ов упирается влево на край экрана и вверх на край экрана.
+![](res/rec11.gif)
+А вью `points` упирается сверху на край экрана, а слева на группу __RadioButton__'ов.
+![](res/rec12.gif)
+
+Расположите все элементы, как считаете нужным. У меня получился вот такой вариант:
+
+![](res/img1.png)
+
+Запустите код и убедитесь, что все элементы располагаются как вы задумывали.
+
+## Последний штришок
+
+Возвращаемся в __MainActivity__. Для начала инициализируем все наши новые вью (я назначил id `geuss` в __RadioGroup__).
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    var points = 0
+
+    lateinit var result: TextView
+    lateinit var pointsView: TextView
+    lateinit var guess: RadioGroup
+
+    lateinit var roll: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        result = findViewById(R.id.result)
+        roll = findViewById(R.id.roll)
+        pointsView = findViewById(R.id.points)
+        guess = findViewById(R.id.guess)
+
+        roll.setOnClickListener {
+            val rollResult = rollDice()
+
+            result.text = "$rollResult"
+        }
+    }
+
+    fun addPointsIfGuessed(dice: Int, guess: Int) {
+        if (dice == guess) {
+            points += 10
+        }
+    }
+
+    fun rollDice(): Int {
+        val range = (1..6)
+        return range.random()
+    }
+}
+```
+
+Если __RadioGroup__ у вас подсвечивается красным, попробуй добавить импорт:
+
+```kotlin
+import android.widget.RadioGroup
+```
+
+Обратите внимание, что изначально у нас ни один из радио кнопок не выбран. Давай сделаем так, чтобы изначально был выбран первый пункт:
+
+```kotlin
+guess.check(R.id.choice1)
+```
+
+Дальше нам надо определить какой был сделан выбор из радио-кнопок при нажатии на кнопку `Босить`.
+
+```kotlin
+roll.setOnClickListener {
+    val rollResult = rollDice()
+
+    result.text = "$rollResult"
+
+    val checkedId = guess.checkedRadioButtonId
+
+    var choice = 1
+
+    if (checkedId == R.id.choice1) {
+        choice = 1
+    }
+
+    if (checkedId == R.id.choice2) {
+        choice = 2
+    }
+
+    if (checkedId == R.id.choice3) {
+        choice = 3
+    }
+
+    if (checkedId == R.id.choice4) {
+        choice = 4
+    }
+
+    if (checkedId == R.id.choice5) {
+        choice = 5
+    }
+
+    if (checkedId == R.id.choice6) {
+        choice = 6
+    }
+
+    addPointsIfGuessed(rollResult, choice)
+}
+```
+
+* `val checkedId = guess.checkedRadioButtonId` - мы получаем `id` текущей выбранной радио-кнопки.
+* `if (checkedId == R.id.choice1) { choice = 1 }` - мы проходимся по всем `id` радио-кнопок и проверяем, какой из `id` соответствует выбранному.
+* `addPointsIfGuessed(rollResult, choice)` - в конце мы вызываем метод `addPointsIfGuessed()`, чтобы он прибавил очки, если нужно. Аргументами будут выпавшее на кубике число и текущий выбор пользователя.
+
+Нам еще нужно доработать метод `addPointsIfGuessed()`, чтобы при вызове этого метода текстовой вью текущего счета очков обновлялось.
+
+```kotlin
+fun addPointsIfGuessed(dice: Int, guess: Int) {
+    if (dice == guess) {
+        points += 10
+    }
+
+    pointsView.text = "Очки: $points"
+}
+```
+
+Финальная версия кода (внимание, большие объемы):
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    var points = 0
+
+    lateinit var result: TextView
+    lateinit var pointsView: TextView
+    lateinit var guess: RadioGroup
+
+    lateinit var roll: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        result = findViewById(R.id.result)
+        roll = findViewById(R.id.roll)
+        pointsView = findViewById(R.id.points)
+        guess = findViewById(R.id.guess)
+
+        guess.check(R.id.choice1)
+
+        roll.setOnClickListener {
+            val rollResult = rollDice()
+
+            result.text = "$rollResult"
+
+            val checkedId = guess.checkedRadioButtonId
+
+            var choice = 1
+
+            if (checkedId == R.id.choice1) {
+                choice = 1
+            }
+
+            if (checkedId == R.id.choice2) {
+                choice = 2
+            }
+
+            if (checkedId == R.id.choice3) {
+                choice = 3
+            }
+
+            if (checkedId == R.id.choice4) {
+                choice = 4
+            }
+
+            if (checkedId == R.id.choice5) {
+                choice = 5
+            }
+
+            if (checkedId == R.id.choice6) {
+                choice = 6
+            }
+
+            addPointsIfGuessed(rollResult, choice)
+        }
+    }
+
+    fun addPointsIfGuessed(dice: Int, guess: Int) {
+        if (dice == guess) {
+            points += 10
+        }
+
+        pointsView.text = "Очки: $points"
+    }
+
+    fun rollDice(): Int {
+        val range = (1..6)
+        return range.random()
+    }
+}
+```
+
+Запустите код и поиграйте в приложение, которое сами же создали:
+![](res/rec13.gif)
+
+# Резюмируя
+
+* Чтобы получить случайное число из заданного промежутка, используйте `(1..10).random()`
+* Элементы на экране называются __вью__ (_view_) и создаются в файле `activity_main.xml`
+* Необходимо задавать `id` у вью, чтобы потом обращаться к ним в коде
+* Весь код пишется в классе __MainActivity__ в методе `onCreate()`
