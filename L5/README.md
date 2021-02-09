@@ -343,7 +343,7 @@ import android.widget.RadioGroup
 guess.check(R.id.choice1)
 ```
 
-Дальше нам надо определить какой был сделан выбор из радио-кнопок при нажатии на кнопку `Босить`.
+Дальше нам надо определить какой был сделан выбор из радио-кнопок при нажатии на кнопку `Босить`:
 
 ```kotlin
 roll.setOnClickListener {
@@ -388,6 +388,37 @@ roll.setOnClickListener {
   выбранному.
 * `addPointsIfGuessed(rollResult, choice)` - в конце мы вызываем метод `addPointsIfGuessed()`, чтобы он прибавил очки, если нужно.
   Аргументами будут выпавшее на кубике число и текущий выбор пользователя.
+
+Запись получилась довольно громоздкой. Чтобы это исправить, давайте познакомимся с ключевым словом `when`. Оно работает примерно так же, как и `if-else`, только
+у `when` может быть сколько угодно много веток:
+
+```kotlin
+roll.setOnClickListener {
+    val rollResult = rollDice()
+
+    result.text = "$rollResult"
+
+    val checkedId = guess.checkedRadioButtonId
+
+    var choice = 1
+
+    when (checkedId) {
+        R.id.choice1 -> choice = 1
+        R.id.choice2 -> choice = 2
+        R.id.choice3 -> choice = 3
+        R.id.choice4 -> choice = 4
+        R.id.choice5 -> choice = 5
+        else -> choice = 6
+    }
+
+    addPointsIfGuessed(rollResult, choice)
+}
+```
+* `when (checkedId) { ... }` - мы пишем ключевое слово `when` и в круглые скобки пишем переменную, значение которой мы будем сравнивать.
+* `R.id.choice1 -> choice = 1` - на каждой строке мы пишем сначала чему аргумент должен быть равен, а затем через стрелку `->` пишем что нужно в этом случае сделать.
+* `else -> choice = 6` - последней строчкой может идти ключевое слово `else`, которое будет выполнено, если ни один из вариантов выше не отработает.
+
+По-русски, это можно прочитать так: "Если значение `checkedId` равно `R.id.choice1`, то `choice` равен 1. Если значение `checkedId` равно `R.id.choice2`, то `choice` равен 2 и т.д."
 
 Нам еще нужно доработать метод `addPointsIfGuessed()`, чтобы при вызове этого метода текстовой вью текущего счета очков обновлялось.
 
@@ -434,28 +465,13 @@ class MainActivity : AppCompatActivity() {
 
             var choice = 1
 
-            if (checkedId == R.id.choice1) {
-                choice = 1
-            }
-
-            if (checkedId == R.id.choice2) {
-                choice = 2
-            }
-
-            if (checkedId == R.id.choice3) {
-                choice = 3
-            }
-
-            if (checkedId == R.id.choice4) {
-                choice = 4
-            }
-
-            if (checkedId == R.id.choice5) {
-                choice = 5
-            }
-
-            if (checkedId == R.id.choice6) {
-                choice = 6
+            when (checkedId) {
+                R.id.choice1 -> choice = 1
+                R.id.choice2 -> choice = 2
+                R.id.choice3 -> choice = 3
+                R.id.choice4 -> choice = 4
+                R.id.choice5 -> choice = 5
+                else -> choice = 6
             }
 
             addPointsIfGuessed(rollResult, choice)
