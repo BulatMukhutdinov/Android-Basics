@@ -40,4 +40,4 @@
 
 # Автор
 
-Автор данного курса — [Булат Мухутдинов](https://github.com/BulatMukhutdinov).
+Автор данного курса — [Булат Дин](https://github.com/BulatMukhutdinov).
