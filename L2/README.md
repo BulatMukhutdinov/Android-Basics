@@ -327,8 +327,8 @@ fun subtract(a: Int, b: Int): Int {
 
 Официальная документация по Котлину
 
-* [Объявление переменных](https://kotlinlang.org/docs/reference/basic-syntax.html#defining-variables)
-* [Объявление функций](https://kotlinlang.org/docs/reference/basic-syntax.html#defining-functions)
+* [Объявление переменных](https://kotlinlang.org/docs/basic-syntax.html#variables)
+* [Объявление функций](https://kotlinlang.org/docs/basic-syntax.html#functions)
 
 # Practice makes perfect
 
