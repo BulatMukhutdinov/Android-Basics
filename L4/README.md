@@ -165,7 +165,7 @@
 
 1. В студии нажмите __Tools > SDK Manager__.
 2. Откроется окно __Settings for New Projects__
-   [КАРТИНКА]
+   ![img.png](res/img23.png)
 3. Нажмите на вкладку __SDK Tools__.
 4. Выберите _Google USB Driver_ и нажмите __OK__.
 
