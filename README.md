@@ -1,9 +1,9 @@
 # Быстрые ссылки
-1. [Урок 1](L1/README.md)
-2. [Урок 2](L2/README.md)
-3. [Урок 3](L3/README.md)
-4. [Урок 4](L4/README.md)
-5. [Урок 5](L5/README.md)
+1. [Урок 1. Первая программа на Kotlin](L1/README.md)
+2. [Урок 2. Переменные, Типы данных, Функции](L2/README.md)
+3. [Урок 3. if-else, Классы, Наследование](L3/README.md)
+4. [Урок 4. Установка Android Studio, Перове приложение на Android](L4/README.md)
+5. [Урок 5. Доработка приложения: layout, views, colors, strings](L5/README.md)
 
 # Для чего?
 
